@@ -8,10 +8,20 @@ pub struct lua_State {
 pub type lua_CFunction =
     ::std::option::Option<unsafe extern "C" fn(L: *mut lua_State) -> ::std::os::raw::c_int>;
 extern "C" {
+    pub fn lua_tolstring(
+        L: *mut lua_State,
+        idx: ::std::os::raw::c_int,
+        len: *mut usize,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
     pub fn lua_touserdata(
         L: *mut lua_State,
         idx: ::std::os::raw::c_int,
     ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn lua_pushnil(L: *mut lua_State);
 }
 extern "C" {
     pub fn lua_pushlstring(

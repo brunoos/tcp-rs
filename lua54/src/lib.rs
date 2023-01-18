@@ -49,3 +49,17 @@ pub fn lua_setmetatable(l: *mut lua_State, idx: c_int) -> c_int {
         liblua::lua_setmetatable(l, idx)
     }
 }
+
+pub fn lua_tostring<'a>(l: *mut lua_State, idx: c_int) -> &'a str {
+    unsafe {
+        let mut len: usize = 0;
+        let ptr = liblua::lua_tolstring(l, idx, &mut len);
+        std::str::from_utf8_unchecked(std::slice::from_raw_parts(ptr as *const u8, len))
+    }
+}
+
+pub fn lua_pushnil(l: *mut lua_State) {
+    unsafe {
+        liblua::lua_pushnil(l);
+    }
+}
