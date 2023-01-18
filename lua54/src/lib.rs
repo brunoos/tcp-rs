@@ -2,9 +2,11 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-mod liblua;
-
 use std::ffi::{c_int, c_void};
+use std::slice;
+use std::str;
+
+mod liblua;
 
 pub use liblua::{lua_State, lua_CFunction};
 
@@ -54,7 +56,7 @@ pub fn lua_tostring<'a>(l: *mut lua_State, idx: c_int) -> &'a str {
     unsafe {
         let mut len: usize = 0;
         let ptr = liblua::lua_tolstring(l, idx, &mut len);
-        std::str::from_utf8_unchecked(std::slice::from_raw_parts(ptr as *const u8, len))
+        str::from_utf8_unchecked(slice::from_raw_parts(ptr as *const u8, len))
     }
 }
 

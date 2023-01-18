@@ -1,4 +1,5 @@
-use std::{ffi::c_int, net::TcpStream};
+use std::ffi::c_int;
+use std::net::TcpStream;
 
 use lua54 as lua;
 use lua::{lua_State};
@@ -17,7 +18,7 @@ fn meth_gc(l: *mut lua_State) -> c_int {
 #[lua_cfunction]
 fn meth_connect(l: *mut lua_State) -> c_int {
     let addr = lua::lua_tostring(l, 1);
-    let res = std::net::TcpStream::connect(addr);
+    let res = TcpStream::connect(addr);
     if res.is_err() {
         lua::lua_pushnil(l);
         return 1;
