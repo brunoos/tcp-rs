@@ -5,8 +5,6 @@
 pub struct lua_State {
     _unused: [u8; 0],
 }
-pub type lua_Number = f64;
-pub type lua_Integer = ::std::os::raw::c_longlong;
 pub type lua_CFunction =
     ::std::option::Option<unsafe extern "C" fn(L: *mut lua_State) -> ::std::os::raw::c_int>;
 extern "C" {
@@ -16,10 +14,11 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
-    pub fn lua_pushnumber(L: *mut lua_State, n: lua_Number);
-}
-extern "C" {
-    pub fn lua_pushinteger(L: *mut lua_State, n: lua_Integer);
+    pub fn lua_pushlstring(
+        L: *mut lua_State,
+        s: *const ::std::os::raw::c_char,
+        len: usize,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn lua_pushcclosure(L: *mut lua_State, fn_: lua_CFunction, n: ::std::os::raw::c_int);
@@ -40,4 +39,10 @@ extern "C" {
 }
 extern "C" {
     pub fn lua_rawset(L: *mut lua_State, idx: ::std::os::raw::c_int);
+}
+extern "C" {
+    pub fn lua_setmetatable(
+        L: *mut lua_State,
+        objindex: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }

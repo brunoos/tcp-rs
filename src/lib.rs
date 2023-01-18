@@ -1,9 +1,10 @@
 use std::ffi::c_int;
 
 use lua54 as lua;
-use lua::lua_State;
-
+use lua::{lua_State};
 use lua_macro::{lua_cfunction};
+
+mod util;
 
 struct Person {
     x: i32,
@@ -16,46 +17,35 @@ impl Drop for Person {
     }
 }
 
-struct UserData<T> {
-    ptr: Box<T>
-}
-
-impl<T> Drop for UserData<T> {
-    fn drop(&mut self) {
-        println!("drop UserData");
-    }
-}
-
-fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a UserData<T> {
-    unsafe {
-        let ptr = lua::lua_newuserdata(l, std::mem::size_of::<UserData<T>>()) as *mut UserData<T>;
-        let u: &mut UserData<T> = &mut *ptr;
-        println!("ok");
-        std::ptr::write(&mut u.ptr, Box::new(data));
-        return u;
-    }
-}
-
-fn touserdata<'a, T>(l: *mut lua_State, idx: c_int) -> &'a mut UserData<T> {
-    unsafe {
-        let ptr = lua::lua_touserdata(l, idx) as *mut UserData<T>;
-        return & mut *ptr;
-    }
+#[lua_cfunction]
+fn meth_gc(l: *mut lua_State) -> c_int {
+    let u = util::touserdata::<Person>(l, 1);
+    println!("gc Person: x = {}, y = {}", u.ptr.x, u.ptr.y);
+    unsafe{ std::ptr::read(&u.ptr) };
+    return 0;
 }
 
 #[lua_cfunction]
 fn meth_create(l: *mut lua_State) -> c_int {
-    let p = Person{x: 0, y: 0};
-    newuserdata(l, p);
+    util::newuserdata(l, Person{x: 0, y: 0});
+
+    lua::lua_newtable(l);
+
+    lua::lua_pushstring(l, "__gc");
+    lua::lua_pushcfunction(l, Some(meth_gc));
+    lua::lua_rawset(l, -3);
+
+    lua::lua_setmetatable(l, -2);
+
     return 1;
 }
 
 #[lua_cfunction]
 fn meth_show(l: *mut lua_State) -> c_int {
-    let u = touserdata::<Person>(l, 1);
-    
+    let u = util::touserdata::<Person>(l, 1);
+
     println!("x = {}, y = {}", u.ptr.x, u.ptr.y);
-    
+
     u.ptr.x = u.ptr.x + 1;
     u.ptr.y = u.ptr.y + 1;
 
@@ -66,11 +56,11 @@ fn meth_show(l: *mut lua_State) -> c_int {
 fn luaopen_tcp(l: *mut lua_State) -> c_int {
     lua::lua_newtable(l);
 
-    lua::lua_pushinteger(l, 1);
+    lua::lua_pushstring(l, "create");
     lua::lua_pushcfunction(l, Some(meth_create));
     lua::lua_rawset(l, -3);
 
-    lua::lua_pushinteger(l, 2);
+    lua::lua_pushstring(l, "show");
     lua::lua_pushcfunction(l, Some(meth_show));
     lua::lua_rawset(l, -3);
 

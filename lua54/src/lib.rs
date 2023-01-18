@@ -6,23 +6,11 @@ mod liblua;
 
 use std::ffi::{c_int, c_void};
 
-pub use liblua::{lua_State, lua_Number, lua_Integer, lua_CFunction};
+pub use liblua::{lua_State, lua_CFunction};
 
 pub fn lua_newtable(l: *mut lua_State) {
     unsafe {
         liblua::lua_createtable(l, 0, 0);
-    }
-}
-
-pub fn lua_pushnumber(l: *mut lua_State, n: lua_Number) {
-    unsafe {
-        liblua::lua_pushnumber(l, n);
-    }
-}
-
-pub fn lua_pushinteger(l: *mut lua_State, n: lua_Integer) {
-    unsafe {
-        liblua::lua_pushinteger(l, n);
     }
 }
 
@@ -47,5 +35,17 @@ pub fn lua_newuserdata(l: *mut lua_State, s: usize) -> *mut c_void {
 pub fn lua_touserdata(l: *mut lua_State, idx: c_int) -> *mut c_void {
     unsafe {
         liblua::lua_touserdata(l, idx)
+    }
+}
+
+pub fn lua_pushstring(l: *mut lua_State, s: &str) {
+    unsafe {
+        liblua::lua_pushlstring(l, s.as_ptr() as *const i8, s.len());
+    }
+}
+
+pub fn lua_setmetatable(l: *mut lua_State, idx: c_int) -> c_int {
+    unsafe {
+        liblua::lua_setmetatable(l, idx)
     }
 }

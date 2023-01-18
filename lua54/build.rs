@@ -13,9 +13,9 @@ fn main() {
     .allowlist_function("lua_createtable")
     .allowlist_function("lua_newuserdatauv")
     .allowlist_function("lua_pushcclosure")
-    .allowlist_function("lua_pushinteger")
-    .allowlist_function("lua_pushnumber")
+    .allowlist_function("lua_pushlstring")
     .allowlist_function("lua_rawset")
+    .allowlist_function("lua_setmetatable")
     .allowlist_function("lua_touserdata")
     .generate()
     .expect("Unable to generate bindings");
