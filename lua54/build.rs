@@ -1,10 +1,15 @@
 extern crate bindgen;
 
+use std::env;
+
 fn main() {
+    let path = env::var("LUA_INCDIR").unwrap();
+    let include = format!("-I{}", path);
+
     let bindings = bindgen::Builder::default()
     .header("src/wrapper.h")
+    .clang_arg(include)
     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-    .clang_arg("-I/home/local/lua/5.4/include")
     .allowlist_function("lua_createtable")
     .allowlist_function("lua_newuserdatauv")
     .allowlist_function("lua_pushcclosure")
