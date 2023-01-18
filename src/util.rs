@@ -1,4 +1,6 @@
 use std::ffi::c_int;
+use std::mem;
+use std::ptr;
 
 use lua54 as lua;
 use lua::lua_State;
@@ -9,9 +11,9 @@ pub struct UserData<T> {
 
 pub fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a UserData<T> {
     unsafe {
-        let ptr = lua::lua_newuserdata(l, std::mem::size_of::<UserData<T>>()) as *mut UserData<T>;
+        let ptr = lua::lua_newuserdata(l, mem::size_of::<UserData<T>>()) as *mut UserData<T>;
         let u: &mut UserData<T> = &mut *ptr;
-        std::ptr::write(&mut u.ptr, Box::new(data));
+        ptr::write(&mut u.ptr, Box::new(data));
         return u;
     }
 }
