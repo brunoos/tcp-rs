@@ -1,0 +1,12 @@
+[package]
+name = "tcp-rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+name = "tcp"
+
+[dependencies]
+lua54 = {path = "lua54"}
+lua_macro = {path = "lua_macro"}
