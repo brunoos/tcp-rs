@@ -2,21 +2,18 @@ use std::ffi::c_int;
 use std::net::TcpStream;
 
 use lua54 as lua;
-use lua::{lua_State};
 use lua_macro::{lua_cfunction};
 
-mod util;
-
 #[lua_cfunction]
-fn meth_gc(l: *mut lua_State) -> c_int {
-    let u = util::touserdata::<TcpStream>(l, 1);
+fn meth_gc(l: *mut lua::lua_State) -> c_int {
+    let u = lua::aux::touserdata::<TcpStream>(l, 1);
     println!("drop tcpstream");
     unsafe{ std::ptr::read(&u.ptr) };
     return 0;
 }
 
 #[lua_cfunction]
-fn meth_connect(l: *mut lua_State) -> c_int {
+fn meth_connect(l: *mut lua::lua_State) -> c_int {
     let addr = lua::lua_tostring(l, 1);
     let res = TcpStream::connect(addr);
     if res.is_err() {
@@ -24,7 +21,7 @@ fn meth_connect(l: *mut lua_State) -> c_int {
         return 1;
     }
     
-    util::newuserdata(l, res.unwrap());
+    lua::aux::newuserdata(l, res.unwrap());
     
     lua::lua_newtable(l);
     lua::lua_pushstring(l, "__gc");
@@ -37,7 +34,7 @@ fn meth_connect(l: *mut lua_State) -> c_int {
 }
 
 #[lua_cfunction]
-fn luaopen_tcp(l: *mut lua_State) -> c_int {
+fn luaopen_tcp(l: *mut lua::lua_State) -> c_int {
     lua::lua_newtable(l);
 
     lua::lua_pushstring(l, "connect");

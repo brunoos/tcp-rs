@@ -7,6 +7,7 @@ use std::slice;
 use std::str;
 
 mod liblua;
+pub mod aux;
 
 pub use liblua::{lua_State, lua_CFunction};
 
