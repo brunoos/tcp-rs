@@ -4,11 +4,13 @@ use std::net::TcpStream;
 use lua54 as lua;
 use lua_macro::{lua_cfunction};
 
+mod userdata;
+
 #[lua_cfunction]
 fn meth_gc(l: *mut lua::lua_State) -> c_int {
-    let u = lua::aux::touserdata::<TcpStream>(l, 1);
+    let u = userdata::touserdata::<TcpStream>(l, 1);
     println!("drop tcpstream");
-    unsafe{ std::ptr::read(&u.ptr) };
+    unsafe{ std::ptr::read(&u.data) };
     return 0;
 }
 
@@ -21,7 +23,7 @@ fn meth_connect(l: *mut lua::lua_State) -> c_int {
         return 1;
     }
     
-    lua::aux::newuserdata(l, res.unwrap());
+    userdata::newuserdata(l, res.unwrap());
     
     lua::lua_newtable(l);
     lua::lua_pushstring(l, "__gc");
