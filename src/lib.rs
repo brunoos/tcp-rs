@@ -2,15 +2,14 @@ use std::ffi::c_int;
 use std::net::TcpStream;
 
 use lua54 as lua;
-use lua_macro::{lua_cfunction};
+use lua_macro::lua_cfunction;
 
 mod userdata;
 
 #[lua_cfunction]
 fn meth_gc(l: *mut lua::lua_State) -> c_int {
     let u = userdata::touserdata::<TcpStream>(l, 1);
-    println!("drop tcpstream");
-    unsafe{ std::ptr::read(&u.data) };
+    userdata::dropuserdata(u);
     return 0;
 }
 

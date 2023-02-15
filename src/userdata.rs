@@ -9,6 +9,13 @@ pub struct UserData<T> {
     pub data: Box<T>
 }
 
+pub fn dropuserdata<T>(u: &UserData<T>) {
+    unsafe {
+        let ptr = &u.data as *const Box<T>;
+        ptr::read(ptr);
+    }
+}
+
 pub fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a UserData<T> {
     unsafe {
         let ptr = lua::lua_newuserdata(l, mem::size_of::<UserData<T>>()) as *mut UserData<T>;
