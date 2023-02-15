@@ -13,12 +13,16 @@ fn main() {
     .allowlist_function("lua_createtable")
     .allowlist_function("lua_newuserdatauv")
     .allowlist_function("lua_pushcclosure")
+    .allowlist_function("lua_pushinteger")
     .allowlist_function("lua_pushnil")
     .allowlist_function("lua_pushlstring")
     .allowlist_function("lua_rawset")
     .allowlist_function("lua_setmetatable")
     .allowlist_function("lua_tolstring")
     .allowlist_function("lua_touserdata")
+    .allowlist_function("luaL_newmetatable")
+    .allowlist_function("luaL_setmetatable")
+    .allowlist_function("luaL_testudata")
     .generate()
     .expect("Unable to generate bindings");
 

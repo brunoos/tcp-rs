@@ -16,7 +16,7 @@ pub fn dropuserdata<T>(u: &UserData<T>) {
     }
 }
 
-pub fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a UserData<T> {
+pub fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a mut UserData<T> {
     unsafe {
         let ptr = lua::lua_newuserdata(l, mem::size_of::<UserData<T>>()) as *mut UserData<T>;
         let u: &mut UserData<T> = &mut *ptr;
@@ -25,9 +25,19 @@ pub fn newuserdata<'a, T>(l: *mut lua_State, data: T) -> &'a UserData<T> {
     }
 }
 
-pub fn touserdata<'a, T>(l: *mut lua_State, idx: c_int) -> &'a UserData<T> {
+pub fn touserdata<'a, T>(l: *mut lua_State, idx: c_int) -> &'a mut UserData<T> {
     unsafe {
-        let ptr = lua::lua_touserdata(l, idx) as *const UserData<T>;
-        return &*ptr;
+        let ptr = lua::lua_touserdata(l, idx) as *mut UserData<T>;
+        return &mut *ptr;
+    }
+}
+
+pub fn testudata<'a, T>(l: *mut lua_State, idx: c_int, name: &str) -> Option<&'a mut UserData<T>> {
+    unsafe {
+        let ptr = lua::luaL_testudata(l, idx, name);
+        if ptr.is_null() {
+            return None;
+        }
+        return Some(&mut *(ptr as *mut UserData<T>));
     }
 }
