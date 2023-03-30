@@ -10,3 +10,4 @@ name = "tcp"
 [dependencies]
 lua54 = {path = "lua54"}
 lua_macro = {path = "lua_macro"}
+libc = "0.2"
