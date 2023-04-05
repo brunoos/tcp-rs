@@ -3,7 +3,15 @@ extern crate bindgen;
 use std::env;
 
 fn main() {
-    let path = env::var("LUA_INCDIR").unwrap();
+    let path = match env::var("LUA_INCDIR") {
+        Ok(v) => v,
+        Err(_) => {
+            let inc = String::from("/usr/include/lua5.4");
+            println!("Variable 'LUA_INCDIR' not set, using default path to Lua headers: {}", inc);
+            inc
+        }
+    };
+
     let include = format!("-I{}", path);
 
     let bindings = bindgen::Builder::default()
