@@ -1,3 +1,7 @@
+## ABOUT
+
+Just playing with Lua and Rust. Do not take this code seriously.
+
 ## BUILD
 
 ```bash
