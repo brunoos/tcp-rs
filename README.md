@@ -1,8 +1,8 @@
-## ABOUT
+## About
 
 Just playing with Lua and Rust. Do not take this code seriously.
 
-## BUILD
+## Build
 
 ```bash
 $ cargo build --release
@@ -14,7 +14,7 @@ $ export LUA_INCDIR=/opt/local/lua/5.4/include
 $ cargo build --release
 ```
 
-## INSTALL
+## Install
 
 ```sh
 $ mkdir -p LUA_PATH/net
