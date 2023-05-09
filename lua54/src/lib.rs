@@ -63,6 +63,18 @@ pub fn lua_pushinteger(l: *mut lua_State, n: i64) {
     }
 }
 
+pub fn lua_pushlstring(l: *mut lua_State, s: &str, len: usize) {
+    unsafe {
+        liblua::lua_pushlstring(l, s.as_ptr() as *const i8, len);
+    }
+}
+
+pub fn lua_pushbytes(l: *mut lua_State, s: &[u8]) {
+    unsafe {
+        liblua::lua_pushlstring(l, s.as_ptr() as *const i8, s.len());
+    }
+}
+
 pub fn lua_pushnil(l: *mut lua_State) {
     unsafe {
         liblua::lua_pushnil(l);

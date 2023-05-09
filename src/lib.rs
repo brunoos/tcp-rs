@@ -2,8 +2,9 @@ use std::ptr;
 use std::mem;
 use std::ffi::c_int;
 use std::net::TcpStream;
-use std::io::Write;
+use std::io::{Read,Write};
 use std::os::fd::AsRawFd;
+use std::vec;
 
 use libc;
 
@@ -55,6 +56,28 @@ fn meth_send(l: *mut lua::lua_State) -> c_int {
         return 1;
     }
     lua::lua_pushinteger(l, res.unwrap() as i64);
+    return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+#[lua_cfunction]
+fn meth_recv(l: *mut lua::lua_State) -> c_int {
+    let u = userdata::testudata::<TcpStream>(l, 1, "Net::TCP");
+    if u.is_none() {
+        lua::lua_pushnil(l);
+        return 1;
+    }
+    let u = u.unwrap();
+    let mut buf = vec![0; 4096];
+    let r = u.data.read(buf.as_mut_slice());
+    if r.is_err() {
+        lua::lua_pushnil(l);
+        return 1;
+    }
+    let size = r.unwrap();
+    let data = buf.as_slice();
+    lua::lua_pushbytes(l, &data[0..size]);
     return 1;
 }
 
@@ -182,6 +205,10 @@ fn luaopen_net_tcp_core(l: *mut lua::lua_State) -> c_int {
     lua::lua_pushstring(l, "__index");
     lua::lua_newtable(l);
     
+    lua::lua_pushstring(l, "receive");
+    lua::lua_pushcfunction(l, Some(meth_recv));
+    lua::lua_rawset(l, -3);
+
     lua::lua_pushstring(l, "send");
     lua::lua_pushcfunction(l, Some(meth_send));
     lua::lua_rawset(l, -3);
